@@ -1,0 +1,4 @@
+title=Gun / Firearm Rattle SFX
+description=Subtle client-side firearm movement Foley for Project Zomboid Build 42. No server dependency, world noise, or gameplay effect.
+visibility=unlisted
+tags=Build 42,Audio,Realistic,Weapons,QoL

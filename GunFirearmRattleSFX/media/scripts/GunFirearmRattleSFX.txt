@@ -1,0 +1,3 @@
+module GunFirearmRattleSFX {
+    item GunFirearmRattleSFX_CompatibilityMarker { DisplayName = Gun / Firearm Rattle SFX, Type = Normal, Weight = 0.0, }
+}

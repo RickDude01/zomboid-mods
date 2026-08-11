@@ -1,0 +1,10 @@
+module GunFirearmRattleSFX {
+    sound GunFirearmRattleSFX_Handgun01 { category = Weapon, clip = GunFirearmRattleSFX/handgun_01, volume = 0.45, is3D = false, }
+    sound GunFirearmRattleSFX_Handgun02 { category = Weapon, clip = GunFirearmRattleSFX/handgun_02, volume = 0.45, is3D = false, }
+    sound GunFirearmRattleSFX_Handgun03 { category = Weapon, clip = GunFirearmRattleSFX/handgun_03, volume = 0.45, is3D = false, }
+    sound GunFirearmRattleSFX_Handgun04 { category = Weapon, clip = GunFirearmRattleSFX/handgun_04, volume = 0.45, is3D = false, }
+    sound GunFirearmRattleSFX_LongGun01 { category = Weapon, clip = GunFirearmRattleSFX/longgun_01, volume = 0.45, is3D = false, }
+    sound GunFirearmRattleSFX_LongGun02 { category = Weapon, clip = GunFirearmRattleSFX/longgun_02, volume = 0.45, is3D = false, }
+    sound GunFirearmRattleSFX_LongGun03 { category = Weapon, clip = GunFirearmRattleSFX/longgun_03, volume = 0.45, is3D = false, }
+    sound GunFirearmRattleSFX_LongGun04 { category = Weapon, clip = GunFirearmRattleSFX/longgun_04, volume = 0.45, is3D = false, }
+}
