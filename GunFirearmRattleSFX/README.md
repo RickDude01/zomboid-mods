@@ -14,6 +14,10 @@ The intended Build 42 Mod Options controls are enabled (default on), volume (0â€
 
 Supported movement is grounded crouch-walk, walk, jog, sprint, and injured movement. Aiming, idle, vehicles, special actions, alternate locomotion, and inventory-only firearms are silent. Deaf suppresses playback; Hard of Hearing reduces it.
 
+## Validation
+
+From the mod directory, run `./tests/validate_assets.sh` to validate the eight OGG assets and execute the deterministic Foley decision tests. The validator requires `ffmpeg`, `ffprobe`, and `luajit`.
+
 ## Compatibility API
 
 ```lua

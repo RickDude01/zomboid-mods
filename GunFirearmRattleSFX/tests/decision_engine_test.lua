@@ -177,6 +177,63 @@ local function test_produces_bounded_playback_decision()
     assertTrue(result.pitch >= 0.97 and result.pitch <= 1.03, "pitch variation is bounded")
 end
 
+local function test_frequency_levels_have_approved_probability_and_streak_limits()
+    local expected = {
+        ["Very Low"] = { 0.20, 8 }, Low = { 0.35, 5 }, Normal = { 0.50, 3 },
+        High = { 0.70, 2 }, ["Very High"] = { 0.90, 1 },
+    }
+    for name, values in pairs(expected) do
+        assertEqual(Engine.frequency[name].chance, values[1], name .. " chance")
+        assertEqual(Engine.frequency[name].maxMisses, values[2], name .. " max misses")
+    end
+end
+
+local function test_forced_accent_ends_the_maximum_silent_streak()
+    local fields = snapshot({ movement = "walk", distance = 0.5,
+        held = { item({ firearm = true, handgun = true }) },
+        settings = { enabled = true, volume = 50, frequency = "Very Low" },
+        random = function() return 0.99 end })
+    local missed = 0
+    for _ = 1, Engine.frequency["Very Low"].maxMisses do
+        local result = Engine.decide(fields)
+        assertEqual(result.play, false, "silent streak should remain below the limit")
+        missed = missed + 1
+        fields.missedSteps, fields.cadenceDistance = result.missedSteps, result.cadenceDistance
+    end
+    local forced = Engine.decide(fields)
+    assertTrue(forced.play, "the next eligible step must force an accent")
+    assertEqual(forced.missedSteps, 0)
+end
+
+local function test_active_playback_skips_without_overlapping()
+    local result = Engine.decide(snapshot({ distance = 0.5, activePlayback = true,
+        held = { item({ firearm = true, handgun = true }) }, random = function() return 0 end }))
+    assertEqual(result.play, false)
+    assertEqual(result.reason, "active playback")
+end
+
+local function test_sample_selection_avoids_immediate_repeat()
+    local result = Engine.decide(snapshot({ distance = 0.5, lastSample = "Handgun01",
+        held = { item({ firearm = true, handgun = true }) }, random = function() return 0 end }))
+    assertTrue(result.play)
+    assertEqual(result.sample, "Handgun02")
+end
+
+local function test_gain_factors_follow_movement_profile_carry_and_hearing()
+    local function decide(fields)
+        fields.distance = 1.0
+        fields.random = function() return 0.4 end
+        fields.settings = { enabled = true, volume = 100, frequency = "Normal" }
+        return Engine.decide(snapshot(fields)).gain
+    end
+    local attachedLongGun = decide({ movement = "sprint", hearing = "Keen Hearing",
+        attached = { item({ firearm = true, longGun = true }) } })
+    local heldHandgun = decide({ movement = "crouch", hearing = "Hard of Hearing",
+        held = { item({ firearm = true, handgun = true }) } })
+    assertEqual(attachedLongGun, 1.0 * 0.98, "long-gun sprint gain")
+    assertEqual(heldHandgun, 0.45 * 0.80 * 0.55 * 0.60 * 0.98, "held handgun hearing gain")
+end
+
 local tests = {
     test_classifies_vanilla_firearms,
     test_rejects_ranged_non_firearms,
@@ -193,6 +250,11 @@ local tests = {
     test_special_actions_and_alternate_locomotion_are_silent,
     test_unrealistic_position_jump_is_clamped,
     test_produces_bounded_playback_decision,
+    test_frequency_levels_have_approved_probability_and_streak_limits,
+    test_forced_accent_ends_the_maximum_silent_streak,
+    test_active_playback_skips_without_overlapping,
+    test_sample_selection_avoids_immediate_repeat,
+    test_gain_factors_follow_movement_profile_carry_and_hearing,
 }
 
 for _, test in ipairs(tests) do test() end
