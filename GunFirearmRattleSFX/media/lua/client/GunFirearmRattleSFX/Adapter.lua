@@ -3,6 +3,10 @@ local Compatibility = require("GunFirearmRattleSFX/Compatibility")
 local Adapter = { state = { lastX = nil, lastY = nil, missedSteps = 0, cadenceDistance = 0,
     lastSample = nil, activeUntil = 0, equipmentAt = -math.huge, held = {}, attached = {} } }
 local function setting(name, fallback)
+    if GunFirearmRattleSFXModOptions and GunFirearmRattleSFXModOptions.getOption then
+        local option = GunFirearmRattleSFXModOptions:getOption(name)
+        if option and option.getValue then return option:getValue() end
+    end
     if PZAPI and PZAPI.ModOptions and PZAPI.ModOptions.get then
         local ok, options = pcall(PZAPI.ModOptions.get, PZAPI.ModOptions, "GunFirearmRattleSFX")
         if ok and options and options.getOption then

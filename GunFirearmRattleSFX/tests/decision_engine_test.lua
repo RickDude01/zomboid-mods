@@ -234,6 +234,42 @@ local function test_gain_factors_follow_movement_profile_carry_and_hearing()
     assertEqual(heldHandgun, 0.45 * 0.80 * 0.55 * 0.60 * 0.98, "held handgun hearing gain")
 end
 
+local function test_settings_have_safe_defaults_and_legal_ranges()
+    local defaults = Engine.normalizeSettings()
+    assertEqual(defaults.enabled, true)
+    assertEqual(defaults.volume, 50)
+    assertEqual(defaults.frequency, "Normal")
+    local normalized = Engine.normalizeSettings({ enabled = false, volume = -20, frequency = "invalid" })
+    assertEqual(normalized.enabled, false)
+    assertEqual(normalized.volume, 0)
+    assertEqual(normalized.frequency, "Normal")
+    normalized = Engine.normalizeSettings({ volume = 200, frequency = "Very High" })
+    assertEqual(normalized.volume, 100)
+    assertEqual(normalized.frequency, "Very High")
+end
+
+local function test_zero_volume_suppresses_playback()
+    local result = Engine.decide(snapshot({
+        settings = { enabled = true, volume = 0, frequency = "Normal" },
+        distance = 1.0, held = { item({ firearm = true, handgun = true }) },
+    }))
+    assertEqual(result.play, false)
+    assertEqual(result.reason, "volume")
+end
+
+local function test_live_enablement_hearing_and_frequency_index_are_applied()
+    local fields = snapshot({ distance = 1.0, held = { item({ firearm = true, handgun = true }) } })
+    fields.settings = { enabled = false, volume = 100, frequency = 5 }
+    assertEqual(Engine.decide(fields).reason, "disabled")
+    fields.settings.enabled = true
+    fields.hearing = "Deaf"
+    assertEqual(Engine.decide(fields).reason, "Deaf")
+    fields.hearing = "Hard of Hearing"
+    local result = Engine.decide(fields)
+    assertTrue(result.play, "live settings should be read on the next decision")
+    assertEqual(Engine.normalizeSettings({ frequency = 5 }).frequency, "Very High")
+end
+
 local tests = {
     test_classifies_vanilla_firearms,
     test_rejects_ranged_non_firearms,
@@ -255,6 +291,9 @@ local tests = {
     test_active_playback_skips_without_overlapping,
     test_sample_selection_avoids_immediate_repeat,
     test_gain_factors_follow_movement_profile_carry_and_hearing,
+    test_settings_have_safe_defaults_and_legal_ranges,
+    test_zero_volume_suppresses_playback,
+    test_live_enablement_hearing_and_frequency_index_are_applied,
 }
 
 for _, test in ipairs(tests) do test() end

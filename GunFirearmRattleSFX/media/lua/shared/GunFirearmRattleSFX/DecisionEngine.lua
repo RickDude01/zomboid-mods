@@ -7,6 +7,7 @@ local frequency = {
     High = { chance = 0.70, maxMisses = 2 },
     ["Very High"] = { chance = 0.90, maxMisses = 1 },
 }
+local frequencyValues = { "Very Low", "Low", "Normal", "High", "Very High" }
 
 local movementGain = { crouch = 0.45, walk = 0.65, jog = 0.85, sprint = 1.0, injured = 0.55 }
 -- These are movement-distance units, not update frames.  They intentionally
@@ -14,6 +15,19 @@ local movementGain = { crouch = 0.45, walk = 0.65, jog = 0.85, sprint = 1.0, inj
 local cadenceDistance = { crouch = 0.45, walk = 0.50, jog = 0.65, sprint = 0.80, injured = 0.75 }
 local maximumPlausibleDelta = 4.0
 local samples = { handgun = { "Handgun01", "Handgun02", "Handgun03", "Handgun04" }, longGun = { "LongGun01", "LongGun02", "LongGun03", "LongGun04" } }
+
+local defaultSettings = { enabled = true, volume = 50, frequency = "Normal" }
+
+local function normalizeSettings(settings)
+    settings = settings or {}
+    local volume = tonumber(settings.volume)
+    if not volume then volume = defaultSettings.volume end
+    volume = math.max(0, math.min(100, volume))
+    local selectedFrequency = settings.frequency
+    if type(selectedFrequency) == "number" then selectedFrequency = frequencyValues[selectedFrequency] end
+    if not frequency[selectedFrequency] then selectedFrequency = defaultSettings.frequency end
+    return { enabled = settings.enabled ~= false, volume = volume, frequency = selectedFrequency }
+end
 
 local function hasAny(item, keys)
     for _, key in ipairs(keys) do if item[key] then return true end end
@@ -81,7 +95,7 @@ function Engine.decide(snapshot)
     local movement = snapshot.movement
     local movementAliases = { ["crouch-walk"] = "crouch", walking = "walk", jogging = "jog", sprinting = "sprint" }
     movement = movementAliases[movement] or movement
-    local settings = snapshot.settings or { enabled = true, volume = 50, frequency = "Normal" }
+    local settings = normalizeSettings(snapshot.settings)
     local function suppressed(reason)
         return { play = false, reason = reason, cadenceDistance = 0, missedSteps = 0 }
     end
@@ -98,6 +112,7 @@ function Engine.decide(snapshot)
         return suppressed("weapon handling")
     end
     if snapshot.hearing == "Deaf" then return suppressed("Deaf") end
+    if settings.volume <= 0 then return suppressed("volume") end
     if movement == "idle" or not movementGain[movement] or (snapshot.distance or 0) <= 0 then
         return suppressed("idle")
     end
@@ -140,6 +155,9 @@ function Engine.decide(snapshot)
 end
 
 Engine.frequency = frequency
+Engine.frequencyValues = frequencyValues
 Engine.samples = samples
 Engine.cadenceDistance = cadenceDistance
+Engine.defaultSettings = defaultSettings
+Engine.normalizeSettings = normalizeSettings
 return Engine
