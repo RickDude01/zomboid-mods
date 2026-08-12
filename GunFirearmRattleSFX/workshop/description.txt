@@ -1,0 +1,8 @@
+Gun / Firearm Rattle SFX v0.1.0
+
+Subtle, intermittent client-side firearm movement Foley for Project Zomboid Build 42.
+Handguns use a lighter holster-and-hardware profile; long guns use a heavier sling-and-stock profile.
+
+The effect is cosmetic and local-only: it creates no world noise, attracts no zombies, synchronizes no state, and does not require server installation. Configure enablement, volume, and frequency from Build 42's native Mod Options panel.
+
+Tested on macOS with Build 42.20.2. Windows/Linux are expected but unverified. Multiplayer is expected to remain client-side but is untested.
