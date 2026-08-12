@@ -99,6 +99,15 @@ local function test_malformed_equipment_fails_silent()
     assertEqual(Engine.select({ held = { false, { fullType = 12 } }, attached = false }), nil)
 end
 
+local function test_selection_does_not_require_the_next_global()
+    local originalNext = next
+    next = nil
+    local ok, result = pcall(Engine.select, { held = { item({ firearm = true, handgun = true }) }, attached = {} })
+    next = originalNext
+    assertTrue(ok, "Build 42 does not provide Lua's next global")
+    assertEqual(result.profile, "handgun")
+end
+
 local function test_suppresses_aiming_and_idle()
     assertEqual(Engine.decide(snapshot({ aiming = true, held = { item({ firearm = true, handgun = true }) } })).reason, "aiming")
     assertEqual(Engine.decide(snapshot({ movement = "idle", held = { item({ firearm = true, handgun = true }) } })).reason, "idle")
@@ -278,6 +287,7 @@ local tests = {
     test_uses_legacy_signals_and_ambiguous_fallback,
     test_reports_each_ambiguous_item_once,
     test_malformed_equipment_fails_silent,
+    test_selection_does_not_require_the_next_global,
     test_suppresses_aiming_and_idle,
     test_all_grounded_movement_classes_use_distance_cadence,
     test_small_updates_accumulate_until_a_step_without_frame_rate_cadence,

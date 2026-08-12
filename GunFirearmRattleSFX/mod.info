@@ -3,5 +3,7 @@ id=GunFirearmRattleSFX
 description=Client-side firearm movement Foley for Project Zomboid Build 42.
 author=timtim
 version=0.1.0
+pzversion=42
+versionMin=42.0.0
 poster=preview.png
 modversion=0.1.0

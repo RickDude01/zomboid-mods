@@ -35,7 +35,9 @@ local function hasAny(item, keys)
 end
 
 local function isList(value)
-    return type(value) == "table" and (next(value) == nil or type(next(value)) == "number")
+    if type(value) ~= "table" then return false end
+    for key in pairs(value) do return type(key) == "number" end
+    return true
 end
 
 function Engine.classify(item, overrides, warn)
