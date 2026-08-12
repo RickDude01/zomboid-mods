@@ -33,8 +33,9 @@ local function itemData(item)
         local ammunition = item.getAmmoType and item:getAmmoType() or nil
         local twoHanded = item.isTwoHandWeapon and item:isTwoHandWeapon() == true or false
         local explicitFirearm = item.isFirearm and item:isFirearm() == true
-        local reloadable = item.isReloadable and item:isReloadable() == true
-            or item.getReloadTime ~= nil or item.getMagazineType ~= nil
+        -- Build 42's isReloadable expects an argument.  An ammo type plus the
+        -- firearm's standard magazine accessor is sufficient legacy evidence.
+        local reloadable = item.getMagazineType ~= nil
         local ranged = item.isRanged and item:isRanged() == true
         local weight = item.getActualWeight and item:getActualWeight() or 0
         return { fullType = fullType, nonFirearmRanged = nonFirearm,

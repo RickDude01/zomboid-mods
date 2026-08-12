@@ -23,4 +23,21 @@ local player = {
 
 assertEqual(player.HasTrait, nil, "Build 42 exposes hasTrait, not HasTrait")
 assertEqual(Adapter.snapshot(player).hearing, "Deaf")
+
+local pistol = {
+    getFullType = function() return "Base.Pistol" end,
+    getAmmoType = function() return "Base.Bullets9mm" end,
+    getMagazineType = function() return "Base.9mmClip" end,
+    isTwoHandWeapon = function() return false end,
+    isRanged = function() return true end,
+    getActualWeight = function() return 1 end,
+    isReloadable = function(_, argument)
+        assertEqual(argument, "required", "Build 42's isReloadable requires an argument")
+        return true
+    end,
+}
+player.getPrimaryHandItem = function() return pistol end
+Adapter.invalidateEquipment()
+local snapshot = Adapter.snapshot(player)
+assertEqual(snapshot.selected.profile, "handgun", "pistol remains detectable without isReloadable")
 print("adapter_test: passed")
