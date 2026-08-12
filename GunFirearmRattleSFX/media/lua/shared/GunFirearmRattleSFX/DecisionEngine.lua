@@ -42,11 +42,11 @@ function Engine.classify(item, overrides, warn)
     if type(item) ~= "table" or type(item.fullType) ~= "string" then return nil end
     local override = overrides and overrides[item.fullType]
     if override == "silent" then return nil end
-    if override == "handgun" or override == "long gun" then
-        return { profile = override == "long gun" and "longGun" or "handgun", evidence = "explicit override" }
+    if override == "handgun" or override == "longgun" or override == "long gun" then
+        return { profile = (override == "longgun" or override == "long gun") and "longGun" or "handgun", evidence = "explicit override" }
     end
     if item.bow or item.crossbow or item.slingshot or item.nonFirearmRanged then return nil end
-    local tagged = item.firearm == true or item.isFirearm == true
+    local tagged = (item.firearm == true or item.isFirearm == true) and item.legacy ~= true
     local legacy = item.ranged and item.ammunition and hasAny(item, { "reloadable", "reloadTime", "firearmType", "magazineType" })
     if not tagged and not legacy then return nil end
     if item.longGun or item.longgun then
@@ -120,7 +120,7 @@ function Engine.decide(snapshot)
     if snapshot.movementJump or snapshot.teleported or distance > maximumPlausibleDelta then
         return suppressed("movement jump")
     end
-    local selected = Engine.select(snapshot, snapshot.overrides, snapshot.warn)
+    local selected = snapshot.selected or Engine.select(snapshot, snapshot.overrides, snapshot.warn)
     if not selected then return suppressed("no firearm") end
     local stepDistance = cadenceDistance[movement]
     local traveled = (snapshot.cadenceDistance or 0) + distance

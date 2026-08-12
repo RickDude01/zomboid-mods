@@ -47,5 +47,5 @@ grep -q 'Handgun01.*Handgun02.*Handgun03.*Handgun04' "$engine" || { echo "handgu
 grep -q 'LongGun01.*LongGun02.*LongGun03.*LongGun04' "$engine" || { echo "long-gun pool mismatch" >&2; exit 1; }
 grep -qi 'original.*procedural\|CC BY 4.0' "$provenance" || { echo "provenance ledger is incomplete" >&2; exit 1; }
 
-(cd "$root" && luajit tests/decision_engine_test.lua && luajit tests/mod_options_test.lua)
+(cd "$root" && luajit tests/decision_engine_test.lua && luajit tests/compatibility_test.lua && luajit tests/mod_options_test.lua)
 echo "asset validation: 8 unique clips, format/duration/peak/references/provenance checks passed"

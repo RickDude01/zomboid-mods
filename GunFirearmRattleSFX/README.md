@@ -22,9 +22,9 @@ From the mod directory, run `./tests/validate_assets.sh` to validate the eight O
 
 ```lua
 local GunFirearmRattleSFX = require("GunFirearmRattleSFX/init")
-GunFirearmRattleSFX.register("MyMod.CustomRifle", "long gun")
-GunFirearmRattleSFX.register("MyMod.CustomPistol", "handgun")
-GunFirearmRattleSFX.register("MyMod.NoisyProp", "silent")
+GunFirearmRattleSFX.registerItem("MyMod.CustomRifle", "longgun")
+GunFirearmRattleSFX.registerItem("MyMod.CustomPistol", "handgun")
+GunFirearmRattleSFX.registerItem("MyMod.NoisyProp", "silent")
 ```
 
 Valid registrations return `true`; invalid calls return `false` without throwing. Later registrations replace earlier ones and emit one warning.
