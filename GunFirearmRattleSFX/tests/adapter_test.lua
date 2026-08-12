@@ -76,14 +76,14 @@ Adapter.snapshot = function()
         selected = { profile = "handgun", carry = "held" }, random = function() return 0 end }
 end
 local result = Adapter.tick({
-    playSoundLocal = function(_, sound, gain)
-        requestedSound, requestedGain = sound, gain
+    playSoundLocal = function(_, sound, ...)
+        assertEqual(select("#", ...), 0, "Build 42 playSoundLocal accepts only the sound name")
+        requestedSound = sound
     end,
 })
 print, Adapter.snapshot = originalPrint, originalSnapshot
 assertEqual(result.play, true, "eligible firearm movement should request playback")
 assertEqual(requestedSound, "GunFirearmRattleSFX_Handgun01", "adapter requests the selected sound")
-assertEqual(type(requestedGain), "number", "adapter supplies a numeric gain")
 assertEqual(debugMessages[2], "[GunFirearmRattleSFX DEBUG-PLAY] requesting sound=GunFirearmRattleSFX_Handgun01 gain=0.129 profile=handgun carry=held",
     "adapter logs the exact playback request")
 print("adapter_test: passed")

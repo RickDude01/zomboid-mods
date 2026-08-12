@@ -161,7 +161,7 @@ function Adapter.tick(player)
     local sound = "GunFirearmRattleSFX_" .. result.sample
     print(string.format("[GunFirearmRattleSFX DEBUG-PLAY] requesting sound=%s gain=%.3f profile=%s carry=%s",
         sound, result.gain, result.profile or "unknown", result.carry or "unknown"))
-    player:playSoundLocal(sound, result.gain)
+    player:playSoundLocal(sound)
     return result
 end
 return Adapter
