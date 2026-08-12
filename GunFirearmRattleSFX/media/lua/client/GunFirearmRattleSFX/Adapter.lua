@@ -56,8 +56,16 @@ local function hasTrait(player, trait)
     local ok, result = pcall(player.hasTrait, player, trait)
     return ok and result == true
 end
-local function isMoving(player, distance)
-    if player.isMoving then return player:isMoving() end
+local function logSuppression(result)
+    local reason = "suppressed reason=" .. tostring(result.reason or "unknown")
+    if Adapter.state.lastDebugDecision == reason then return end
+    Adapter.state.lastDebugDecision = reason
+    print("[GunFirearmRattleSFX DEBUG-DECISION] " .. reason)
+end
+local function isMoving(_, distance)
+    -- Build 42 can report false from isMoving during OnPlayerUpdate even when
+    -- the player's coordinates changed. The position delta is the source used
+    -- for cadence, so it is also the reliable movement signal.
     return distance > 0
 end
 local function movementState(player, distance)
@@ -143,10 +151,17 @@ function Adapter.tick(player)
     if not player then return end
     local result = Engine.decide(Adapter.snapshot(player)); Adapter.state.missedSteps = result.missedSteps or 0
     Adapter.state.cadenceDistance = result.cadenceDistance or 0
-    if not result.play then return result end
+    if not result.play then
+        logSuppression(result)
+        return result
+    end
+    Adapter.state.lastDebugDecision = "play"
     Adapter.state.lastSample = result.sample
     Adapter.state.activeUntil = (getTimestampMs and getTimestampMs() or 0) + 350
-    player:playSoundLocal("GunFirearmRattleSFX_" .. result.sample, result.gain)
+    local sound = "GunFirearmRattleSFX_" .. result.sample
+    print(string.format("[GunFirearmRattleSFX DEBUG-PLAY] requesting sound=%s gain=%.3f profile=%s carry=%s",
+        sound, result.gain, result.profile or "unknown", result.carry or "unknown"))
+    player:playSoundLocal(sound, result.gain)
     return result
 end
 return Adapter
