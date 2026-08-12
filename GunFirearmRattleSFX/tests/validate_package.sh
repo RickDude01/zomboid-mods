@@ -24,6 +24,9 @@ for package in "$manual" "$workshop_mod/42"; do
     [[ -f "$package/docs/PROVENANCE.md" && -f "$package/docs/COMPATIBILITY.md" ]] || {
         echo "missing release docs in $package" >&2; exit 1;
     }
+    [[ ! -f "$package/media/scripts/GunFirearmRattleSFX.txt" ]] || {
+        echo "legacy compatibility-marker item must not be packaged in $package" >&2; exit 1;
+    }
     if find "$package" -type f \( -name '*.DS_Store' -o -path '*/tests/*' -o -path '*/tools/*' \) | grep -q .; then
         echo "development-only files leaked into $package" >&2; exit 1
     fi
