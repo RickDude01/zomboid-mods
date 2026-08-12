@@ -1,6 +1,6 @@
 # Gun / Firearm Rattle SFX
 
-Version 0.1.0 for Project Zomboid Build 42 (tested on 42.20.2).
+Version 0.1.0 for Project Zomboid Build 42 (target baseline: 42.20.2).
 
 This client-only mod adds restrained, intermittent movement Foley when the local survivor carries a recognized firearm. Handguns use a lighter profile; long guns use a heavier sling-and-hardware profile. It does not create world noise, attract zombies, synchronize state, or require server installation.
 
@@ -38,9 +38,10 @@ contents. Neither script uploads to Steam or changes Workshop visibility.
 
 ## Test status
 
-The release candidate is tested on macOS with Build 42.20.2. Windows and Linux
-are expected but unverified. Multiplayer is designed to remain client-side and
-is expected to work without server installation, but multiplayer is untested.
+The target macOS baseline is Build 42.20.2; this candidate's clean install and
+in-game validation remain open. Windows and Linux are expected but unverified.
+Multiplayer is designed to remain client-side and is expected to work without
+server installation, but multiplayer is untested.
 The in-game listening pass in `docs/TEST-CHECKLIST.md` remains a release-owner
 check and is not replaced by automated validation.
 
@@ -56,3 +57,6 @@ GunFirearmRattleSFX.registerItem("MyMod.NoisyProp", "silent")
 Valid registrations return `true`; invalid calls return `false` without throwing. Later registrations replace earlier ones and emit one warning.
 
 See [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md), [docs/TEST-CHECKLIST.md](docs/TEST-CHECKLIST.md), and [docs/PROVENANCE.md](docs/PROVENANCE.md).
+
+See [docs/VALIDATION-REPORT.md](docs/VALIDATION-REPORT.md) for the dated
+validation evidence and the release-owner checks that remain open.

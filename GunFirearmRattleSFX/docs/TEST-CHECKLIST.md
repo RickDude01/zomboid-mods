@@ -1,5 +1,10 @@
 # In-game test checklist
 
+Automated and package validation passed on 2026-08-11. See
+[VALIDATION-REPORT.md](VALIDATION-REPORT.md) for evidence. The items below
+remain an interactive game-session checklist and are intentionally unchecked
+until performed by the release owner.
+
 - [ ] Clean install on macOS with Build 42.20.2.
 - [ ] `Base.Pistol`: held and attached, crouch/walk/jog/sprint.
 - [ ] `Base.Shotgun`: held and attached, with mixed-priority equipment.
