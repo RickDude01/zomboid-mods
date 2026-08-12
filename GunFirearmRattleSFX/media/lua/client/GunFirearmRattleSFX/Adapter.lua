@@ -50,6 +50,11 @@ end
 local function callsTrue(object, method)
     return object and object[method] and object[method](object) == true
 end
+local function hasTrait(player, trait)
+    if not player or not player.hasTrait or not trait then return false end
+    local ok, result = pcall(player.hasTrait, player, trait)
+    return ok and result == true
+end
 local function isMoving(player, distance)
     if player.isMoving then return player:isMoving() end
     return distance > 0
@@ -113,13 +118,15 @@ function Adapter.snapshot(player)
     end
     local alternateLocomotion = callsTrue(player, "isDraggingCorpse")
         or callsTrue(player, "isCarryingAnimal") or callsTrue(player, "isCarryingHeavyItem")
+    local hearing = hasTrait(player, CharacterTrait and CharacterTrait.DEAF) and "Deaf"
+        or (hasTrait(player, CharacterTrait and CharacterTrait.HARD_OF_HEARING) and "Hard of Hearing" or nil)
     return { held = held, attached = attached, distance = distance, movementJump = movementJump,
         movement = movementState(player, distance),
         aiming = player:isAiming(), inVehicle = player:isSeatedInVehicle(),
         specialAction = callsTrue(player, "isVaulting") or callsTrue(player, "isClimbing")
             or callsTrue(player, "isFalling") or callsTrue(player, "isGettingUp"),
         alternateLocomotion = alternateLocomotion,
-        hearing = player:HasTrait("Deaf") and "Deaf" or (player:HasTrait("HardOfHearing") and "Hard of Hearing" or nil),
+        hearing = hearing,
         settings = { enabled = setting("enabled", true), volume = setting("volume", 50), frequency = setting("frequency", "Normal") },
         overrides = Compatibility.overrides, missedSteps = Adapter.state.missedSteps,
         cadenceDistance = Adapter.state.cadenceDistance, lastSample = Adapter.state.lastSample,
